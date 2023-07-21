@@ -1,8 +1,13 @@
 class Repository:
     def __init__(self, entities_list):
+        """
+        Constructor for Repository class
+        :param entities_list: list of entities (list)
+        """
         self.__entities_list = entities_list
 
     def find_position(self, entity):
+
         for index in range(len(self.__entities_list)):
             if self.__entities_list[index] == entity:
                 return index

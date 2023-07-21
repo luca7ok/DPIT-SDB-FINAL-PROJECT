@@ -145,7 +145,7 @@ class ConsoleUI:
         if not len(events_in_city):
             raise Exception(f"There are no events in the city {city} or there are no events!")
 
-        for event in self.__event_organizer_service.events_in_city(city):
+        for event in events_in_city:
             print(event)
 
     # Organizer option-6
