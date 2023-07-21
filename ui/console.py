@@ -3,7 +3,9 @@ from service.participant_service import ParticipantService
 from service.statistics_service import StatisticsService
 
 from datetime import datetime
+
 import os
+import validators
 
 
 class ConsoleUI:
@@ -45,27 +47,35 @@ class ConsoleUI:
         try:
             int(number_of_participants)
         except Exception:
-            raise ValueError("Number of participants is not a number!")
+            raise ValueError("\nNumber of participants is not a number!\n")
 
     def __valid_max_capacity(self, max_capacity: str):
         try:
             int(max_capacity)
         except Exception:
-            raise ValueError("Maximum capacity is not a number!")
+            raise ValueError("\nMaximum capacity is not a number!\n")
 
     def __valid_start_date(self, start_date: str):
         date_format = '%d/%m/%Y'
         try:
             datetime.strptime(start_date, date_format).date()
         except Exception:
-            raise ValueError("Start date is not a valid date!")
+            raise ValueError("\nStart date is not a valid date!\n")
 
     def __valid_end_date(self, end_date: str):
         date_format = '%d/%m/%Y'
         try:
             datetime.strptime(end_date, date_format).date()
         except Exception:
-            raise ValueError("End date is not a valid date!")
+            raise ValueError("\nEnd date is not a valid date!\n")
+
+    def __valid_website_link(self, website_link: str):
+        if not website_link.startswith('https://'):
+           website_link = f'https://{website_link}'
+
+        valid = validators.url(website_link)
+        if not valid:
+            raise Exception("\nWebsite link is not valid!\n")
 
     def __valid_month(self, month: str):
         try:
@@ -74,12 +84,12 @@ class ConsoleUI:
             try:
                 12 >= month >= 1
             except:
-                raise Exception("Please enter a valid month!")
+                raise Exception("\nPlease enter a valid month!\n")
         except:
             try:
                 datetime.strptime(month, '%B').month
             except:
-                raise Exception("Please enter a valid month!")
+                raise Exception("\nPlease enter a valid month!\n")
 
     # Organizer option-1
     def __add_event(self):
@@ -92,14 +102,16 @@ class ConsoleUI:
         max_capacity = input("Max capacity: ")
         start_date = input("Start date: ")
         end_date = input("End date: ")
+        website_link = input("Website link: ")
 
         self.__valid_number_of_participants(number_of_participants)
         self.__valid_max_capacity(max_capacity)
         self.__valid_start_date(start_date)
         self.__valid_end_date(end_date)
+        self.__valid_website_link(website_link)
 
         self.__event_organizer_service.add_event(id, name, city, number_of_participants, max_capacity, start_date,
-                                                 end_date)
+                                                 end_date, website_link)
 
     # Organizer option-2
     def __delete_event(self):
@@ -115,19 +127,20 @@ class ConsoleUI:
         max_capacity = input("Max capacity: ")
         start_date = input("Start date: ")
         end_date = input("End date: ")
+        website_link = input("Website link: ")
 
         self.__valid_number_of_participants(number_of_participants)
         self.__valid_max_capacity(max_capacity)
         self.__valid_start_date(start_date)
         self.__valid_end_date(end_date)
+        self.__valid_website_link(website_link)
 
         self.__event_organizer_service.update_event(old_id, name, city, number_of_participants, max_capacity,
-                                                    start_date,
-                                                    end_date)
+                                                    start_date, end_date, website_link)
 
     # Organizer option-4 / Participant option-1
     def __show_all_events(self):
-        print('\n')
+        print()
         list_of_events = self.__event_organizer_service.get_all_events()
 
         if not len(list_of_events):
@@ -135,11 +148,12 @@ class ConsoleUI:
 
         for event in list_of_events:
             print(event)
+            self.__event_organizer_service.show_qr_code(event.get_name())
 
     # Organizer option-5
     def __show_events_from_city(self):
         city = input("City in which events take place: ")
-        print('\n')
+        print()
         events_in_city = self.__event_organizer_service.events_in_city(city)
 
         if not len(events_in_city):
@@ -151,7 +165,7 @@ class ConsoleUI:
     # Organizer option-6
     def __show_participants_from_event(self):
         id = input("Event ID: ")
-        print('\n')
+        print()
         participants_from_event = self.__participant_service.participants_to_event(id)
 
         if not len(participants_from_event):
@@ -162,7 +176,7 @@ class ConsoleUI:
 
     # Organizer option-7
     def __show_events_with_participants(self):
-        print('\n')
+        print()
         events_with_participants = self.__event_organizer_service.events_with_participants()
 
         if not len(events_with_participants):
@@ -181,7 +195,7 @@ class ConsoleUI:
 
     # Participant option-3
     def __show_events_next_week(self):
-        print('\n')
+        print()
         events_next_week = self.__event_organizer_service.events_next_week()
 
         if not len(events_next_week):
@@ -195,7 +209,7 @@ class ConsoleUI:
         month = input("Month in which events start: ")
 
         self.__valid_month(month)
-        print('\n')
+        print()
         events_in_month = self.__event_organizer_service.events_in_month(month)
 
         if not len(events_in_month):
@@ -207,7 +221,7 @@ class ConsoleUI:
 
     # Participant option-5
     def __show_all_participants(self):
-        print('\n')
+        print()
         list_of_participants = self.__participant_service.get_all_participants()
         if not len(list_of_participants):
             raise Exception("There are no participants!")
@@ -215,7 +229,20 @@ class ConsoleUI:
         for participant in list_of_participants:
             print(participant)
 
+    # qr codes
+    def __delete_all_qr_codes(self):
+        for file in os.listdir('qr_codes'):
+            os.remove(os.path.join('qr_codes', file))
+
+    def __initial_qr_codes(self):
+        event_list = self.__event_organizer_service.get_all_events()
+        for event in event_list:
+            self.__event_organizer_service.generate_qr_code(event.get_name(), event.get_website_link())
+
     def run(self):
+        self.__delete_all_qr_codes()
+        self.__initial_qr_codes()
+
         while True:
             self.__print_main_menu()
             try:
@@ -247,6 +274,7 @@ class ConsoleUI:
                                 self.__show_events_with_participants()
                         except Exception as error:
                             print(error)
+
                 elif command == 2:
                     os.system('cls')
                     while True:

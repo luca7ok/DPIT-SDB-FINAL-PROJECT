@@ -1,5 +1,5 @@
 class Event:
-    def __init__(self, id, name, city, number_of_participants, max_capacity, start_date, end_date):
+    def __init__(self, id, name, city, number_of_participants, max_capacity, start_date, end_date, website_link):
         """
         Constructor function for Event class
         :param id: id of event (str)
@@ -8,7 +8,8 @@ class Event:
         :param number_of_participants: number of participants at event (int)
         :param max_capacity: maximum number of participants at event (int)
         :param start_date: start date of event (str)
-        :param end_date: nd date of event (str)
+        :param end_date: end date of event (str)
+        :param website_link: website link of event (str)
         """
         self.__id = id
         self.__name = name
@@ -17,6 +18,7 @@ class Event:
         self.__max_capacity = max_capacity
         self.__start_date = start_date
         self.__end_date = end_date
+        self.__website_link = website_link
 
     def get_id(self):
         """
@@ -24,7 +26,12 @@ class Event:
         :return: id of an event (str)
         """
         return self.__id
-
+    def get_name(self):
+        """
+        Getter function that return the name of an event
+        :return: name of an event (str)
+        """
+        return self.__name
     def get_city(self):
         """
         Getter function that returns the city an event takes place in
@@ -59,7 +66,12 @@ class Event:
         :return: end date of an event (str)
         """
         return self.__end_date
-
+    def get_website_link(self):
+        """
+        Getter function that return the website link of an event
+        :return: website link of an event (str)
+        """
+        return self.__website_link
     def set_name(self, new_name):
         """
         Setter function that changes the name of an event
@@ -108,6 +120,14 @@ class Event:
         """
         self.__end_date = new_end_date
 
+    def set_website_link(self, new_website_link):
+        """
+        Setter function that changes the website link of an event
+        :param new_website_link: new website link (str)
+        :return:
+        """
+        self.__website_link = new_website_link
+
     def __str__(self):
         """
         Returns the details of an event
@@ -119,7 +139,8 @@ class Event:
                f"Number of participants: {self.__number_of_participants}\n" \
                f"Max capacity: {self.__max_capacity}\n" \
                f"Start date: {self.__start_date}\n" \
-               f"End date: {self.__end_date}\n"
+               f"End date: {self.__end_date}\n" \
+               f"Website link: {self.__website_link}\n"
 
     def __repr__(self):
         return str(self)
