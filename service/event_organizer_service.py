@@ -2,11 +2,10 @@ from domain.event import Event
 from repository.repository import Repository
 
 from datetime import timedelta, datetime
-
 import qrcode
 import os
-from matplotlib import pyplot as plt
-from matplotlib import image as mpimg
+from matplotlib import pyplot
+from matplotlib import image
 
 
 class EventOrganizerService:
@@ -54,16 +53,16 @@ class EventOrganizerService:
         :param name: name of the event
         :return:
         """
-        plt.title(f'{name}')
-        image = mpimg.imread(f'qr_codes/{name}.png')
-        plt.imshow(image)
-        plt.show()
+        pyplot.title(f'{name}')
+        img = image.imread(f'qr_codes/{name}.png')
+        pyplot.imshow(img)
+        pyplot.show()
 
     # Organizer option-1
     def add_event(self, id, name, city, number_of_participants, max_capacity, start_date, end_date, website_link):
         """
         Adds an event to the list of events if it does not exist already and
-        add sits website's qr code to the qr_codes folder
+        adds its website's qr code to the qr_codes folder
         :param id: id of the event (str)
         :param name: name of event (str)
         :param city: city where event takes place (str)

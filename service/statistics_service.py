@@ -24,14 +24,14 @@ class StatisticsService:
         events_participant_attends = participant.get_list_of_events()
         for event_attended in events_participant_attends:
             if event_attended == id:
-                raise Exception("Participant already goes to this event!")
+                raise Exception("\nParticipant already goes to this event!\n")
 
     def sign_up_participant(self, id, name, picture_link):
         """
         Will sign up a participant to an event and increase the event's number of participants, if the event exists or if
         it hasn't reached maximum capacity.
         If the participant is already signed for other events then it will just add the event's id to the participant's
-        list of events he attends, if he doesn't already attend this event, otherwise a new participant will be created
+        list of events he attends if he doesn't already attend this event, otherwise a new participant will be created
         and added to the list of participants
 
         :param id: id of the event to sign up for (str)
@@ -62,6 +62,6 @@ class StatisticsService:
                     if not valid_participant:
                         self.__participant_repository.add(Participant(name, picture_link, [id]))
                 else:
-                    raise Exception("The event has reached its maximum capacity!")
+                    raise Exception("\nThe event has reached its maximum capacity!\n")
         if not valid_event:
-            raise Exception("The event doesn't exist!")
+            raise Exception("\nThe event doesn't exist!\n")

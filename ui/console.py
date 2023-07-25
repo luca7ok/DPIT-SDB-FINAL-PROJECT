@@ -38,7 +38,7 @@ class ConsoleUI:
               "Please select one of the options:\n"
               "1. View all events\n"
               "2. Sign up for an event\n"
-              "3. View events that start in the next 7 days, sorted ascended by their number of participants\n"
+              "3. View events that start in the next 7 days, sorted ascended by their maximum number of participants\n"
               "4. View events that start in a certain month, sorted descended by their duration\n"
               "5. View all participants\n"
               "0. Back to main menu")
@@ -71,25 +71,11 @@ class ConsoleUI:
 
     def __valid_website_link(self, website_link: str):
         if not website_link.startswith('https://'):
-           website_link = f'https://{website_link}'
+            website_link = f'https://{website_link}'
 
         valid = validators.url(website_link)
         if not valid:
             raise Exception("\nWebsite link is not valid!\n")
-
-    def __valid_month(self, month: str):
-        try:
-            int(month)
-            month = int(month)
-            try:
-                12 >= month >= 1
-            except:
-                raise Exception("\nPlease enter a valid month!\n")
-        except:
-            try:
-                datetime.strptime(month, '%B').month
-            except:
-                raise Exception("\nPlease enter a valid month!\n")
 
     # Organizer option-1
     def __add_event(self):
@@ -157,7 +143,7 @@ class ConsoleUI:
         events_in_city = self.__event_organizer_service.events_in_city(city)
 
         if not len(events_in_city):
-            raise Exception(f"There are no events in the city {city} or there are no events!")
+            raise Exception(f"There are no events in the city {city}!")
 
         for event in events_in_city:
             print(event)
@@ -169,7 +155,7 @@ class ConsoleUI:
         participants_from_event = self.__participant_service.participants_to_event(id)
 
         if not len(participants_from_event):
-            raise Exception("There are no participants at this event or there are no participants at all!")
+            raise Exception("There are no participants at this event!")
 
         for participant in participants_from_event:
             print(participant)
@@ -208,7 +194,6 @@ class ConsoleUI:
     def __show_events_in_month(self):
         month = input("Month in which events start: ")
 
-        self.__valid_month(month)
         print()
         events_in_month = self.__event_organizer_service.events_in_month(month)
 
@@ -216,8 +201,9 @@ class ConsoleUI:
             raise Exception(f"There are no events in that month or there are no events")
 
         for event in events_in_month:
-            print(event, datetime.strptime(event.get_end_date(), "%d/%m/%Y")
-                  - datetime.strptime(event.get_start_date(), "%d/%m/%Y"), '\n')
+            print(event, end='')
+            print("Duration:", datetime.strptime(event.get_end_date(), "%d/%m/%Y")
+                            - datetime.strptime(event.get_start_date(), "%d/%m/%Y"), '\n')
 
     # Participant option-5
     def __show_all_participants(self):
